@@ -1,73 +1,45 @@
-# Contents
+# Infra-Ops Repository
 
-### Frappe/ERPNext Helm Chart
+This repository contains the infrastructure as code (IaC) configuration for deploying and managing our infrastructure. It uses Terraform to define and provision resources.
 
-Helm Chart to deploy a *frappe-bench*-like environment on Kubernetes. It adds following resources:
+## Overview
 
-ConfigMaps:
+The repository is structured as follows:
 
-- `nginx-config` is used to override default.conf for nginx reverse proxy and static assets container.
+-   `.env`: Contains environment-specific variables (sensitive data).
+-   `.gitignore`: Specifies intentionally untracked files that Git should ignore.
+-   `backend.tf`: Configures the Terraform backend for storing state.
+-   `LICENSE.md`: Contains the license information for the project.
+-   `main.tf`: Defines the main infrastructure resources.
+-   `outputs.tf`: Defines the output variables.
+-   `providers.tf`: Configures the Terraform providers.
+-   `README.md`: This file, providing information about the repository.
+-   `RELEASE.md`: Contains release notes and versioning information.
+-   `variables.tf`: Defines the input variables.
+-   `environments/`: Contains environment-specific configurations.
+    -   `development-home.tfvars`: Variables for the development environment (home).
+    -   `development-office.tfvars`: Variables for the development environment (office).
+    -   `production.tfvars`: Variables for the production environment.
+    -   `staging.tfvars`: Variables for the staging environment.
 
-Deployments:
+## Recommendation
 
-- `gunicorn` deployment contains frappe/erpnext gunicorn.
-- `nginx` deployment contains frappe/erpnext static assets and nginx reverse proxy.
-- `scheduler` deployment contains frappe/erpnext scheduler.
-- `socketio` deployment contains frappe/erpnext socketio.
-- `worker-d` deployment contains frappe/erpnext default worker.
-- `worker-l` deployment contains frappe/erpnext long worker.
-- `worker-s` deployment contains frappe/erpnext short worker.
+It is highly recommended to store your `tfvars` files and environment variables in MinIO or a similar object storage solution for enhanced security and version control. This helps prevent sensitive information from being exposed in your local environment or version control system.
 
-HorizontalPodAutoscalers:
+## Getting Started
 
-- `gunicorn` hpa scales frappe/erpnext gunicorn deployment.
-- `nginx` hpa scales frappe/erpnext nginx deployment.
-- `socketio` hpa scales frappe/erpnext socketio deployment.
-- `worker-d` hpa scales frappe/erpnext default worker deployment.
-- `worker-l` hpa scales frappe/erpnext long worker deployment.
-- `worker-s` hpa scales frappe/erpnext short worker deployment.
+1.  **Install Terraform:** Ensure you have Terraform installed. You can download it from the [Terraform website](https://www.terraform.io/downloads.html).
+2.  **Configure Providers:** Configure the necessary providers in `providers.tf`.
+3.  **Define Variables:** Define your input variables in `variables.tf`.
+4.  **Create Environments:** Create environment-specific configurations in the `environments/` directory.
+5.  **Initialize Terraform:** Run `terraform init` to initialize the Terraform working directory.
+6.  **Plan Changes:** Run `terraform plan` to see the changes that will be applied.
+7.  **Apply Changes:** Run `terraform apply` to apply the changes.
 
-Ingresses:
+## Contributing
 
-- `ingress` with custom name can be dynamically generated using `helm template` and configured values.
+Please read `CONTRIBUTING.md` for details on our code of conduct, and the process for submitting pull requests to us.
 
-Jobs:
+## License
 
-- `vol-fix` job to fix volume permissions, changes the `uid` and `gid` to `1000:1000`.
-- `bench-conf` job to configure db host, redis hosts and socketio port.
-- `create-site` job to create new site.
-- `drop-site` job to drop existing site.
-- `backup-push` job to backup and optionally push backup to S3 for existing site.
-- `migrate` job to migrate existing site.
-- `custom` job to run custom additional commands and configuration.
-
-PVC:
-
-- `erpnext` persistent volume claim is used to allocate volume for sites and config deployed with this release
-- `erpnext-logs` persistent volume claim is used to allocate volume for logs
-
-Secrets:
-
-- `secret` is used to store `db-root-password` for external db host
-
-Services:
-
-- `gunicorn` service exposes pods from gunicorn deployment.
-- `nginx` service exposes pods from nginx deployment.
-- `socketio` service exposes pods from socketio deployment.
-
-ServiceAccounts:
-
-- `erpnext` service account is used by all deployments.
-
-### Release Wizard
-
-This is a release script for maintainers. It does the following:
-
-- Checks latest tag for given major release for frappe and erpnext using git.
-- Validates that release always bumps up.
-- Bumps values.yaml and Chart.yaml for release changes
-- Adds git tag for chart version
-- Push to selected remote
-
-This will trigger workflow to publish new version of helm chart.
+This project is licensed under the terms of the `LICENSE.md` file.
